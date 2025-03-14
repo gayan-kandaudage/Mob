@@ -11,11 +11,9 @@ using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-// ✅ Register services BEFORE calling `builder.Build()`
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -25,21 +23,17 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 var logger = app.Logger;
 
-// Enable Swagger middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Weather Decision API v1"));
 }
 
-// Replace with your WeatherAPI key (hardcoded for now, but should be moved to a config file)
 string weatherApiKey = "7c18c1a04808451099014748251403";
-string weatherApiUrl = $"https://api.weatherapi.com/v1/current.json?q=59.41378,5.268&key={weatherApiKey}";
+string weatherApiUrl = $"https://api.weatherapi.com/v1/current.json?q=Canada&key={weatherApiKey}";
 
-// HTTP Client
 var httpClient = new HttpClient();
 
-// Endpoint to decide work location
 app.MapGet("/work-decision", async () =>
 {
     try
@@ -63,17 +57,12 @@ app.MapGet("/work-decision", async () =>
 
         var result = new
         {
+            Location = weatherData?.Location?.Country,
+            Region = weatherData?.Location?.Name,
             Timestamp = DateTime.UtcNow,
             Decision = weatherData.Current.Condition.Text.Contains("rain", StringComparison.OrdinalIgnoreCase)
                 ? "\ud83c\udfe0 It's raining! Work from home today."
-                : "\u2705 No rain detected! Go to the office.",
-            Weather = new
-            {
-                Condition = weatherData.Current.Condition.Text,
-                Temperature = weatherData.Current.Temp_c,
-                FeelsLike = weatherData.Current.Feelslike_c,
-                Humidity = weatherData.Current.Humidity
-            }
+                : "\u2705 No rain detected! Go to the office."
         };
 
         return Results.Ok(result);
@@ -83,6 +72,12 @@ app.MapGet("/work-decision", async () =>
         logger.LogError($"\u274C Exception occurred: {ex.Message}");
         return Results.Problem(title: "Exception", detail: "An error occurred while processing the request.", statusCode: 500, extensions: new Dictionary<string, object?> { { "Timestamp", DateTime.UtcNow } });
     }
+});
+
+app.UseStaticFiles(); 
+app.MapGet("/", async context =>
+{
+    await context.Response.SendFileAsync("wwwroot/index.html");
 });
 
 app.Run();

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Decision</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        img { display: none; width: 100px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1 id="decision">Loading weather decision...</h1>
+    <img id="weatherIcon" src="" alt="Weather Icon">
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("/work-decision")
+                .then(response => response.json())
+                .then(data => {
+                    console.log("API Response:", data);
+
+                    if (data.Decision) {
+                        document.getElementById("decision").innerText = data.Decision;
+                    }
+
+                    if (data.Weather && data.Weather.Icon) {
+                        const iconElement = document.getElementById("weatherIcon");
+                        iconElement.src = data.Weather.Icon;
+                        iconElement.style.display = "block"; 
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching weather data:", error);
+                    document.getElementById("decision").innerText = "Error fetching weather data.";
+                });
+        });
+    </script>
+</body>
+</html>

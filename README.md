@@ -1,4 +1,4 @@
-# Mob sesstion
+# 🌤 Mob sesstion
 
 ## Install .NET SDK (if not installed):
 
@@ -9,6 +9,10 @@ dotnet --version
 from [mob.sh](https://mob.sh/)
 
 curl -sL install.mob.sh | sh or npm install -g mob
+
+## clone repo
+
+git clone https://github.com/gayan-kandaudage/Mob
 
 ## weather api
 

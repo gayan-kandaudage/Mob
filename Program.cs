@@ -59,7 +59,6 @@ app.MapGet("/work-decision", async () =>
         {
             Location = weatherData?.Location?.Country,
             Region = weatherData?.Location?.Name,
-            Timestamp = DateTime.UtcNow,
             Decision = weatherData.Current.Condition.Text.Contains("rain", StringComparison.OrdinalIgnoreCase)
                 ? "\ud83c\udfe0 It's raining! Work from home today."
                 : "\u2705 No rain detected! Go to the office."

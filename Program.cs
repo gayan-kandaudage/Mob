@@ -59,6 +59,7 @@ app.MapGet("/work-decision", async () =>
         {
             Location = weatherData?.Location?.Country,
             Region = weatherData?.Location?.Name,
+            LastUpdatedAt = weatherData?.Current?.Last_updated,
             Decision = weatherData.Current.Condition.Text.Contains("rain", StringComparison.OrdinalIgnoreCase)
                 ? "\ud83c\udfe0 It's raining! Work from home today."
                 : "\u2705 No rain detected! Go to the office."
@@ -101,6 +102,7 @@ public class WeatherCurrent
     public float Temp_c { get; set; }
     public float Feelslike_c { get; set; }
     public int Humidity { get; set; }
+    public string Last_updated { get; set; }
 }
 
 public class WeatherCondition

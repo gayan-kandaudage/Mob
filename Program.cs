@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
@@ -17,7 +19,7 @@ builder.Logging.AddConsole();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Weather Decision API", Version = "v1" });
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Weather Decision API", Version = "v1" });
 });
 
 var app = builder.Build();
@@ -47,7 +49,7 @@ app.MapGet("/work-decision", async () =>
         if (!response.IsSuccessStatusCode)
         {
             logger.LogError($"\u274C Weather API request failed with status {response.StatusCode}");
-            return Results.Problem("Failed to fetch weather data. Please try again later.");
+            return Results.Problem(title: "Error", detail: "Failed to fetch weather data. Please try again later.", statusCode: 500, extensions: new Dictionary<string, object?> { { "Timestamp", DateTime.UtcNow } });
         }
 
         var responseBody = await response.Content.ReadAsStringAsync();
@@ -56,22 +58,30 @@ app.MapGet("/work-decision", async () =>
         if (weatherData?.Current?.Condition?.Text == null)
         {
             logger.LogError("\u274C Weather API returned an invalid response.");
-            return Results.Problem("Weather API response was invalid.");
+            return Results.Problem(title: "Error", detail: "Weather API response was invalid.", statusCode: 500, extensions: new Dictionary<string, object?> { { "Timestamp", DateTime.UtcNow } });
         }
 
-        if (weatherData.Current.Condition.Text.Contains("rain", StringComparison.OrdinalIgnoreCase))
+        var result = new
         {
-            return Results.Ok("\ud83c\udfe0 It's raining! Work from home today.");
-        }
-        else
-        {
-            return Results.Ok("\u2705 No rain detected! Go to the office.");
-        }
+            Timestamp = DateTime.UtcNow,
+            Decision = weatherData.Current.Condition.Text.Contains("rain", StringComparison.OrdinalIgnoreCase)
+                ? "\ud83c\udfe0 It's raining! Work from home today."
+                : "\u2705 No rain detected! Go to the office.",
+            Weather = new
+            {
+                Condition = weatherData.Current.Condition.Text,
+                Temperature = weatherData.Current.Temp_c,
+                FeelsLike = weatherData.Current.Feelslike_c,
+                Humidity = weatherData.Current.Humidity
+            }
+        };
+
+        return Results.Ok(result);
     }
     catch (Exception ex)
     {
         logger.LogError($"\u274C Exception occurred: {ex.Message}");
-        return Results.Problem("An error occurred while processing the request.");
+        return Results.Problem(title: "Exception", detail: "An error occurred while processing the request.", statusCode: 500, extensions: new Dictionary<string, object?> { { "Timestamp", DateTime.UtcNow } });
     }
 });
 

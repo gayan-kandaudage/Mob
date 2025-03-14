@@ -62,7 +62,14 @@ app.MapGet("/work-decision", async () =>
             LastUpdatedAt = weatherData?.Current?.Last_updated,
             Decision = weatherData.Current.Condition.Text.Contains("rain", StringComparison.OrdinalIgnoreCase)
                 ? "\ud83c\udfe0 It's raining! Work from home today."
-                : "\u2705 No rain detected! Go to the office."
+                : "\u2705 No rain detected! Go to the office.",
+            Weather = new
+            {
+                Temp = weatherData?.Current.Temp_c,
+                Humidity = weatherData?.Current.Humidity,
+                FeelsLike = weatherData?.Current.Feelslike_c,
+                Wind = weatherData?.Current.Wind_kph,
+            }
         };
 
         return Results.Ok(result);
@@ -74,7 +81,7 @@ app.MapGet("/work-decision", async () =>
     }
 });
 
-app.UseStaticFiles(); 
+app.UseStaticFiles();
 app.MapGet("/", async context =>
 {
     await context.Response.SendFileAsync("wwwroot/index.html");
@@ -103,6 +110,7 @@ public class WeatherCurrent
     public float Feelslike_c { get; set; }
     public int Humidity { get; set; }
     public string Last_updated { get; set; }
+    public float Wind_kph { get; set; }
 }
 
 public class WeatherCondition

@@ -69,6 +69,7 @@ api key 7c18c1a04808451099014748251403
     "gust_kph": 5.8
   }
 }
+```
 
 ## Build project
 

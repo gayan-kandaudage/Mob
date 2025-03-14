@@ -21,6 +21,7 @@ api key 7c18c1a04808451099014748251403
 
 ## Api response
 
+```json
 {
   "location": {
     "name": "Canada",

@@ -30,7 +30,7 @@ if (app.Environment.IsDevelopment())
 }
 
 string weatherApiKey = "7c18c1a04808451099014748251403";
-string weatherApiUrl = $"https://api.weatherapi.com/v1/current.json?q=Canada&key={weatherApiKey}";
+string weatherApiUrl = $"https://api.weatherapi.com/v1/current.json?q=Haugesund&key={weatherApiKey}";
 
 var httpClient = new HttpClient();
 

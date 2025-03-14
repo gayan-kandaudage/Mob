@@ -1,5 +1,15 @@
 # 🌤 Mob session
 
+A simple weather forcasting API need bug fixes and enhancements
+
+```json
+{
+location: "Canada",
+region: "Ottawa",
+decision: "✅ No rain detected! Go to the office."
+}
+```
+
 ## Install .NET SDK (if not installed):
 
 dotnet --version
